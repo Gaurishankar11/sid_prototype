@@ -1,0 +1,16 @@
+{% extends "admin/base_site.html" %}
+{% block title %}My django template {% endblock %}
+{% block branding %}
+
+{% endblock %}
+
+{% block content_title %}
+<h1>
+{% if title %}
+  <span class="django-admin-title">Administration &raquo;</span>
+  {{ title }}
+{% else %}
+  {{ site_header|default:_('Administration') }}
+{% endif %}
+</h1>
+{% endblock content_title %}

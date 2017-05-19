@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  
+  <script>
+$('#datepicker').datepicker({dateFormat: 'dd/mm/yy'});
+  </script>
+</head>
+<body>
+<form action="" method="post">
+{% csrf_token %}
+<input id="djoined" name="djoined" type="hidden" class="text" type="date">
+
+<input id="datepicker" class="text" size="11" type="date" name="date" value="{% if data %}{{data}}{% else %}{% endif %}">
+<input class="btn btn-submit" type="submit" value="Available Time" >
+
+{% if data %}
+
+	<div class="radio-btns">
+	<div class="swit">
+      {% for appointment in available_appointments %}
+            <div class="my_radio">
+            <input type="radio"  name="Time" value="{{appointment.start_time}}" /><i></i>{{appointment.start_time}} </div>
+      {% endfor %}
+	 	</div>
+	</div>
+<input class="btn btn-submit" type="submit" value="Submit" >
+{% endif %}
+</form>
+</body>
+</html>

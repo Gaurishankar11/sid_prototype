@@ -1,0 +1,157 @@
+{% load staticfiles %}
+<html>
+<head>
+<title>Feedback Widget Flat Responsive Widget Template :: w3layouts</title>
+<!-- for-mobile-apps -->
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+<meta name="keywords" content="Feedback Widget Responsive, Login form web template, Sign up Web Templates, Flat Web Templates, Login signup Responsive web template, Smartphone Compatible web template, free webdesigns for Nokia, Samsung, LG, SonyEricsson, Motorola web design" />
+<!-- //for-mobile-apps -->
+<link href='//fonts.googleapis.com/css?family=Amaranth:400,400italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Josefin+Slab:400,100,100italic,300,300italic,400italic,600,600italic,700,700italic' rel='stylesheet' type='text/css'>
+<link href='//fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,600italic,700,700italic,800,800italic' rel='stylesheet' type='text/css'>
+<link href="/static/style.css" rel="stylesheet" type="text/css" media="all" />
+</head>
+<style>
+th {
+    border: solid 2px black;
+    padding: 10;
+}
+td {
+	padding: 10;
+    border: solid 2px black;
+}
+</style>
+
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  
+  <script>
+  $(document).ready(function() {
+    $("#datepicker").datepicker();
+  });
+  </script>
+<body>
+
+	{% if objs.feedback_type.is_results %}
+  <div class="row">
+    <div class="col-md-offset-4 col-md-4">
+    <table class="table table-bordered" style="border: 3px solid black; border-collapse: collapse; margin: auto;">
+<!--       <table align="center"> -->
+
+        <thead>
+
+            <tr>
+            	<th>Subject</th>
+
+                <th>Grade</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+        	 {% for grade_obj in grade_objs %}
+            <tr>
+            	<td>{{grade_obj.subject}}</td>
+                <td>{{grade_obj.grade}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+    </div>
+
+	{% else %}
+	<div class="content">
+
+	<h1>{{objs.feedback_type}}</h1>
+	<div class="main">
+		<form action="" method="post">
+			{% csrf_token %}
+			 {% for feedback_qusetion_map in objs.map_feedbacks.all %}
+         <input class="quest" type="hidden" name="feedback_qusetion_map_id" value="{{feedback_qusetion_map.id}}">
+			<h5>{{feedback_qusetion_map.question.text}}</h5>
+					{% if feedback_qusetion_map.question.is_subjective %}
+						  <input type="text" name="answer-{{feedback_qusetion_map.id}}" { % if feedback_qusetion_map.submitted_answer % } value="{% if feedback_qusetion_map.submitted_answer %}{{feedback_qusetion_map.submitted_answer}}{% else %}{% endif %}" required="">
+
+					{% elif feedback_qusetion_map.question.is_objective %}
+						<div class="radio-btns">
+						<div class="swit">
+		                  {% for option in feedback_qusetion_map.question.options.all %}
+		                        <div class="my_radio">
+		                        <input type="radio" required name="answer-{{feedback_qusetion_map.id}}" value="{{option.id}}" /><i></i>{{option}} </div>
+		                  {% endfor %}
+           			 	</div>
+						</div>
+
+          {% elif feedback_qusetion_map.question.is_appointment %}
+
+          <input id="datepicker" class="text" size="11" type="text" name="date" value="{% if data %}{{data}}{% else %}{% endif %} select date">
+          <input class="btn btn-submit" id="avail_time" value="Available Time" type="button">
+          <br><br>
+          <div class="swit" id="avail_radio">
+          </div>
+
+
+					{% else%}
+						<div class="radio-btns">
+						<div class="swit">
+		                  {% for option in feedback_qusetion_map.question.options.all %}
+		                        <div class="my_radio">
+		                        <input type="checkbox"  name="answer-{{feedback_qusetion_map.id}}" value="{{option.id}}" /><i></i>{{option}} </div>
+		                  {% endfor %}
+           			 	</div>
+						</div>
+		      {% endif %}
+		    {% endfor %}
+                  <input class="btn btn-submit" type="submit" value="Submit" > &nbsp; <p id="successtext"></p>
+    <!-- <input id="datepicker" /> -->
+    </form>
+
+	</div>
+	</div>
+
+	{% endif %}
+<script>
+// $("#avail_time").click(function(e) {
+//     $('#avail_radio').remove()});
+
+$("#avail_time").click(function(e) {
+    e.preventDefault();
+    // alert($('#datepicker').datepicker({ dateFormat: 'dd-mm-yyyy' }).val());
+    $.ajax({
+        type: "POST",
+        url: "/avail_time/",
+        data: {
+            date: $('#datepicker').datepicker({ dateFormat: 'yyyy-mm-dd' }).val(),
+            'csrfmiddlewaretoken': '{{ csrf_token }}',
+        },
+        
+        success: function(response) {
+      $('#avail_radio').empty();
+      console.log((response.available_appointments).length);
+      if ((response.available_appointments).length != 0){
+			$.each(response.available_appointments, function(index,element) {
+			            console.log(element);
+			            $('#avail_radio').append('<div class="my_radio"><div class="my_radio"><input type="radio"  name="Time" value='+element.id+'><i></i>'+element.time+'</div></div>');
+			        });
+        }
+        else{ 
+          alert('No appointment available on this date');}
+      },
+        error: function(result) {
+            alert('error');
+        }
+    });
+});
+
+function removeDummy() {
+    alert("hello");
+}
+</script>
+
+</body>
+</html>

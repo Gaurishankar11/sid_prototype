@@ -1,0 +1,144 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrahead %}{{ block.super }}
+<script type="text/javascript" src="{% url 'admin:jsi18n' %}"></script>
+{{ media }}
+{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}" />
+
+{% endblock %}
+
+{% block coltype %}colM{% endblock %}
+
+{% block bodyclass %}{{ block.super }} app-{{ opts.app_label }} model-{{ opts.model_name }} change-form{% endblock %}
+
+{% if not is_popup %}
+  {% block breadcrumbs %}
+    <ol class="breadcrumb">
+      <li class="home">
+        <a href="{% url 'admin:index' %}" title="{% trans 'Home' %}"><span class="glyphicon glyphicon-home"></span></a>
+      </li>
+      
+      <li class="active">
+        {{feedback}}
+      </li>
+    </ol>
+  {% endblock %}
+{% endif %}
+
+{% block content %}
+  <div id="content-main">
+   
+  	<div class="container" style="margin-bottom: 15px;">
+  		<div class="row">
+  			<div class="col-md-6">
+  				<b>Name</b> : {{feedback}}
+  			</div>
+  			<div class="col-md-6">
+  				<b>Feedback Type</b> : {{feedback.feedback_type}}
+  			</div>	
+  		</div>
+  		<div class="row">
+  			<div class="col-md-6">
+  				<b>Start Time</b> : {{feedback.started_on}}
+  			</div>
+  			<div class="col-md-6">
+  				<b>End Time</b> : {{feedback.ended_on}}
+  			</div>	
+  		</div>	
+  	</div>	
+    {% if feedback.feedback_type.is_results %}
+    <table class="table table-bordered">
+
+        <thead>
+
+            <tr>
+              <th>Index</th>
+
+                <th>Name</th>
+
+                <th>Subject</th>
+
+                <th>Grade</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+    {% else %}
+    <table class="table table-bordered">
+
+        <thead>
+
+            <tr>
+              <th>Index</th>
+
+                <th>Question</th>
+
+                <th>Answer</th>
+
+                <th>Submited At</th>
+
+            </tr>
+
+        </thead>
+
+        <tbody>
+
+    {% endif %}
+        {% if feedback.feedback_type.is_appointment %}
+          {% for feedback_qusetion_map in feedback.map_feedbacks.all %}
+            <tr>
+
+              <td>{{forloop.counter}}</td>
+                <td>{{feedback_qusetion_map.question.text}}</td>
+
+                <td>{{feedback_appointment_obj.appointment}}</td>
+
+                <td>{{feedback_qusetion_map.submitted_at}}</td>
+
+            </tr>
+            {% endfor %}
+
+        {% elif feedback.feedback_type.is_results %}
+
+            {% for grade in user_grade_map_obj %}
+            <tr>
+
+              <td>{{forloop.counter}}</td>
+                <td>{{grade.user}}</td>
+
+                <td>{{grade.subject}}</td>
+
+                <td>{{grade.grade}}</td>
+
+            </tr>
+            {% endfor %}
+
+        {% else %}
+
+        	 {% for feedback_qusetion_map in feedback.map_feedbacks.all %}
+            <tr>
+            	<td>{{forloop.counter}}</td>
+                <td>{{feedback_qusetion_map.question.text}}</td>
+
+                <td>{{feedback_qusetion_map.get_submitted_answer}}</td>
+
+                <td>{{feedback_qusetion_map.submitted_at}}</td>
+
+            </tr>
+            {% endfor %}
+
+        {% endif %}
+        </tbody>
+    </table>
+  </div>
+{% endblock %}
+
+
