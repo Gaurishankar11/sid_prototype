@@ -16,7 +16,8 @@ class FeedBackView(View):
 	"""
 	"""
         def __init__(self):
-            print "this is start"
+            print "Adnmbsmhgv"
+            print "xjhdkjagsdkgs"
 
 	def get(self, request, code):
 		"""
