@@ -15,6 +15,8 @@ import pdb
 class FeedBackView(View):
 	"""
 	"""
+        def __init__(self):
+            print "this is start"
 
 	def get(self, request, code):
 		"""
